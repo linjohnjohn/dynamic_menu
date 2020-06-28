@@ -1,0 +1,40 @@
+body {
+    height: 100vh;
+    font-size: 14px;
+}
+
+.main-container {
+    margin: 0 1rem;
+}
+
+.menu-item {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    min-width: 250px;
+}
+
+.sold-out {
+    text-decoration: line-through red;
+}
+
+.category-heading:not(:first-child) {
+    margin-top: 1rem;
+}
+
+.category-heading {
+    position: relative;
+}
+
+.category-heading img {
+    width: 3rem;
+    height: 6rem;
+    object-position: center;
+    object-fit: cover; /* Do not scale the image */
+
+    position: absolute;
+    left: -3rem;
+}
+
+.menu-column-container>* {
+    margin-left: 4rem;
+}
