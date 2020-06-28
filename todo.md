@@ -1,3 +1,2 @@
-commit and push
-learn about permissions
-edit django admin
+-d edit django admin
+- look into field level permissions
