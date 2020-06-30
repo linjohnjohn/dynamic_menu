@@ -1,14 +1,23 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Category, Item, CategoryVariant, Ingredient
+from .models import Category, Item, CategoryVariant, Ingredient, ItemVariant
 
 class IngredientAdmin(admin.ModelAdmin):
     list_display=('name', 'available')
     list_filter=('available',)
 
+class ItemVariantInline(admin.TabularInline):
+    model = ItemVariant
+    filter_horizontal = ('ingredients',)
+    show_change_link=True
+    extra=1
+
 class ItemAdmin(admin.ModelAdmin):
     filter_horizontal = ('ingredients',)
+    inlines = [
+        ItemVariantInline
+    ]
 
 class ItemInline(admin.TabularInline):
     model = Item

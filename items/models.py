@@ -57,3 +57,20 @@ class Item(models.Model):
             return self.image.url
         except:
             return ''
+
+class ItemVariant(models.Model):
+    name = models.CharField(max_length=200)
+    markup = models.DecimalField(max_digits=10, decimal_places=2)
+    item = models.ForeignKey(to=Item, on_delete=models.CASCADE, related_name='variants')
+    ingredients = models.ManyToManyField(to=Ingredient, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def available(self):
+        ingredients = self.ingredients.all()
+        for i in ingredients:
+            if i.available is False:
+                return False
+        return True
