@@ -25,7 +25,7 @@ SECRET_KEY = 'mct_ijy07^+-lf%f31m4snzd9f7&r-jpmihabz65&q+t2g%dkx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.1.237', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'mathfilters',
     # internal
     'items.apps.ItemsConfig',
+    'orders.apps.OrdersConfig',
 ]
 
 MIDDLEWARE = [

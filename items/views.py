@@ -5,4 +5,4 @@ from .models import Category, Item
 def menu(request):
     categories = Category.objects.all()
     context = { 'categories': categories }
-    return render(request, 'menu.html', context)
+    return render(request, 'items/menu.html', context)

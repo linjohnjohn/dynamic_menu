@@ -1,4 +1,4 @@
-{% extends 'main.html' %}
+{% extends 'items/main.html' %}
 {% load static %}
 {% load mathfilters %}
 
@@ -11,7 +11,7 @@
             {{ category.name }}
         </h5>
         {% for item in category.items.all %}
-        <div class="menu-item d-flex flex-row justify-content-between {% if item.available == False %} sold-out {% endif %}">
+        <a href="{% url 'add_to_cart' item.id %}" class="text-decoration-none text-reset menu-item d-flex flex-row justify-content-between {% if item.available == False %} sold-out {% endif %}">
             <div>
                 <div>{{item.name}}</div>
                 <div>{{item.second_name}}</div>
@@ -26,15 +26,8 @@
                     {{ item.price|addition:variant.markup }}
                 </div>
                 {% endfor %}
-                {% for c_variant in category.variants.all %}
-                <div class="{% if c_variant.available == False %} sold-out {% endif %}">
-                    <em>({{ c_variant.name }})</em>
-                    {{ item.price|addition:c_variant.markup }}
-                </div>
-                {% endfor %}
-
             </div>
-        </div>
+        </a>
         {% endfor %}
     </div>
     <div style="flex-grow:{{category.items.all|length}}"></div>

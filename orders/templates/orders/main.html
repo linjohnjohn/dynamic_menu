@@ -22,7 +22,32 @@
         {% block content %}
         {% endblock content %}
     </div>
+    <script type="text/javascript">
+        const user = '{{request.user}}';
+        const isLoggedIn = user !== 'AnonymousUser';
 
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var cart = JSON.parse(getCookie('cart'));
+        if (!cart) {
+            cart = []
+            document.cookie = `cart=${JSON.stringify(cart)};domain=;path=/`;
+        }
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>

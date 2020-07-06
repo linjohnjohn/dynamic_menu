@@ -7,30 +7,13 @@ class Ingredient(models.Model):
     available = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name 
+        return self.name
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
-
-class CategoryVariant(models.Model):
-    name = models.CharField(max_length=200)
-    markup = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.ForeignKey(to=Category, on_delete=models.CASCADE, related_name='variants')
-    ingredients = models.ManyToManyField(to=Ingredient, blank=True)
-
-    def __str__(self):
-        return self.name
-
-    @property
-    def available(self):
-        ingredients = self.ingredients.all()
-        for i in ingredients:
-            if i.available is False:
-                return False
-        return True
 
 class Item(models.Model):
     name = models.CharField(max_length=200)
@@ -58,14 +41,15 @@ class Item(models.Model):
         except:
             return ''
 
-class ItemVariant(models.Model):
+class Variant(models.Model):
     name = models.CharField(max_length=200)
+    internal_name = models.CharField(max_length=200)
     markup = models.DecimalField(max_digits=10, decimal_places=2)
-    item = models.ForeignKey(to=Item, on_delete=models.CASCADE, related_name='variants')
+    item = models.ManyToManyField(to=Item, blank=True, related_name='variants')
     ingredients = models.ManyToManyField(to=Ingredient, blank=True)
-
+    
     def __str__(self):
-        return self.name
+        return self.internal_name
 
     @property
     def available(self):
@@ -74,3 +58,13 @@ class ItemVariant(models.Model):
             if i.available is False:
                 return False
         return True
+
+class Modifier(models.Model):
+    name = models.CharField(max_length=200)
+    internal_name = models.CharField(max_length=200)
+    markup = models.DecimalField(max_digits=10, decimal_places=2)
+    item = models.ManyToManyField(to=Item, blank=True, related_name="modifiers")
+    ingredients = models.ManyToManyField(to=Ingredient, blank=True)
+
+    def __str__(self):
+        return self.internal_name

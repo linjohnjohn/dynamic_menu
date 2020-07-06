@@ -1,0 +1,51 @@
+{% extends 'orders/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex h-100 flex-column justify-content-center align-items-center">
+    <div class="col-6">
+        <form action="{% url 'add_to_cart' item.id %}" class="add-to-cart-form" method="POST">
+            {% csrf_token %}
+            <input name="item" value="{{item.id}}" hidden>
+
+            <h3>{{item.name}}</h3>
+            <div class="form-group">
+                <label>Variants</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="variant" value="regular" checked>
+                    <label class="form-check-label">Regular</label>
+                </div>
+                {% for variant in item.variants.all %}
+                <div class="d-flex justify-content-between">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="variant" value="{{variant.id}}">
+                        <label class="form-check-label">{{variant.name}}</label>
+                    </div>
+                    <label>+{{variant.markup}}</label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label>Modifiers</label>
+                {% for modifier in item.modifiers.all %}
+                <div class="d-flex justify-content-between">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="modifiers" value="{{modifier.id}}">
+                        <label class="form-check-label">{{modifier.name}} +{{modifier.markup}}</label>
+                    </div>
+                    <label>+{{modifier.markup}}</label>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label>Quantity</label>
+                <input class="form-control" type="number" value="1">
+            </div>
+            <button type="submit" class="btn btn-success btn-block">Add to Cart</button>
+            <a href="{% url 'menu'%}" class="btn btn-danger btn-block">Cancel</a>
+        </form>
+    </div>
+</div>
+<script src="{% static 'js/cart.js' %}"></script>
+{% endblock content %}
