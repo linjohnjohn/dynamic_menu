@@ -1,0 +1,43 @@
+{% extends 'orders/main.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block content %}
+<div class="d-flex flex-column flex-wrap h-100 menu-column-container justify-content-between">
+    {% for category in categories %}
+    <div class="d-flex flex-column justify-content-between position-relative" style="flex-grow:{{category.items.all|length}}">
+        <img class="category-img" src="{% static 'images/example_tea.jpg' %}">
+        <h5 class="category-heading">
+            {{ category.name }}
+        </h5>
+        {% for item in category.items.all %}
+        <a href="{% url 'add_to_cart' item.id %}" class="text-decoration-none text-reset menu-item d-flex flex-row justify-content-between {% if item.available == False %} sold-out {% endif %}">
+            <div>
+                <div>{{item.name}}</div>
+                <div>{{item.second_name}}</div>
+            </div>
+            <div class="d-flex flex-column align-items-end">
+                <div>
+                    {{item.price}}
+                </div>
+                {% for variant in item.variants.all %}
+                <div class="{% if variant.available == False %} sold-out {% endif %}">
+                    <em>({{ variant.name }})</em>
+                    {{ item.price|addition:variant.markup }}
+                </div>
+                {% endfor %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    <div style="flex-grow:{{category.items.all|length}}"></div>
+    {% endfor %}
+
+    <!-- {% for i in '012345678901234567890123456789'|make_list %}
+        <div class="menu-item">
+            {{i}}
+        </div>
+        {% endfor %} -->
+</div>
+
+{% endblock content %}

@@ -1,0 +1,138 @@
+{% extends 'orders/main.html' %}
+{% load static %}
+
+{% block head %}
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock head %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6">
+            <div id="form-wrapper" class="box-element">
+                <form id="form">
+                    {% csrf_token %}
+                    <div id="user-info" class="form-row mb-3">
+                        <div class="col">
+                            <label>Name</label>
+                            <input type="text" class="form-control" placeholder="Name" name="name">
+                        </div>
+                        <div class="col">
+                            <label>Phone Number</label>
+                            <input type="text" class="form-control" placeholder="Phone Number" name="phone">
+                        </div>
+                    </div>
+                    <div id="user-info" class="form-row mb-3">
+                        <div class="col">
+                            <label>Email</label>
+                            <input type="text" class="form-control" placeholder="Email" name="email">
+                        </div>
+                    </div>
+
+                    <input id="form-continue" type="submit" value="Continue"
+                        class="btn btn-outline-success btn-block" />
+                </form>
+            </div>
+
+            <div class="box-element" hidden id="payment-info">
+                <!-- <small>Paypal Options</small> -->
+                <button id="checkout-button" class="btn btn-primary btn-block">Stripe Checkout</button>
+            </div>
+
+        </div>
+        <div class="col-lg-6">
+            <div class="box-element">
+                <a href="{% url 'cart' %}" class="btn btn-outline-dark">&#x2190; Back to Cart</a>
+                <hr>
+                <h3>Order Summary</h3>
+                <hr>
+                <!-- {% for item in items %}
+            <div class="cart-row">
+                <div style="flex:2"><img src="{{ item.product.imageURL }}" alt=""></div>
+                <div style="flex:2">{{ item.product.name }}</div>
+                <div style="flex:1">${{ item.product.price }}</div>
+                <div style="flex:1">{{ item.quantity }}</div>
+                <div style="flex:1">{{ item.get_total }}</div>
+            </div>
+            {% endfor %} -->
+
+                <h5>Items: {{ order.get_num_items }}</h5>
+                <h5>Total: ${{ order.get_cart_total|floatformat:2 }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script
+    src="https://www.paypal.com/sdk/js?client-id=AWbL2VQW4yJSYDE9gjY8pSFGQ15pn5Q6pyN7AbzPzwrsPOq1DbXdiDDqiRAoiANcjLKfTkKS4hA1CjkM&currency=USD&disable-funding=credit"></script>
+<script type="text/javascript">
+    const stripe = Stripe('pk_test_51H3NC3LegJFM7u3CW4Q3Z1Spuel0IYsSKcAHYOz8Nx1kmv0iRYIShmbBArJuzTbs7gkMBUmYl8DxpNcDW0OdfbB100uY7f0Lnd');
+
+    const checkoutButton = document.querySelector('#checkout-button');
+
+    checkoutButton.addEventListener('click', function() {
+        stripe.redirectToCheckout({
+            sessionId: '{{ session_id }}'
+        }).then(function (result) {
+            window.result = result;
+        })
+    })
+
+    const total = '{{order.get_cart_total}}'
+</script>
+
+<script type="text/javascript">
+    if (isLoggedIn) {
+        document.querySelector('#user-info').remove();
+    }
+
+    if (isLoggedIn) {
+        document.querySelector('#form-wrapper').remove();
+        document.querySelector('#payment-info').hidden = false;
+    } else {
+        const form = document.querySelector('#form');
+        csrftoken = form.querySelectorAll("input")[0].value;
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            document.querySelector('#form-continue').hidden = true;
+            document.querySelector('#payment-info').hidden = false;
+        });
+    }
+
+    function processCheckout() {
+        const userFormData = {
+            name: null,
+            email: null,
+            phone: null,
+            total
+        }
+
+        if (!isLoggedIn) {
+            userFormData.name = form.name.value
+            userFormData.email = form.email.value
+            userFormData.phone = form.phone.value
+        }
+
+        const url = '/checkout/';
+        const body = { form: userFormData };
+        debugger
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+            },
+            body: JSON.stringify(body)
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            cart = []
+            document.cookie = `cart=${JSON.stringify(cart)};domain=;path=/`;
+            location.href = "{% url 'menu'%}";
+        })
+    }
+</script>
+{% endblock script %}

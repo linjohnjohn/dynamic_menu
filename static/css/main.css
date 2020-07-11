@@ -1,10 +1,36 @@
 body {
     height: 100vh;
-    font-size: 14px;
+    position: relative;
+}
+
+.icon-link {
+    /* font-size: 0; */
+    color: white;
+}
+
+.cart-row {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ececec;
+}
+
+.cart-row img {
+    width: 100px;
+}
+
+#num-cart-items {
+    padding-left: 0.25rem;
+}
+
+.nav-item {
+    font-size: 1.25rem;
 }
 
 .main-container {
-    margin: 0 1rem;
+    /* margin: 0 1rem; */
+    overflow: auto;
 }
 
 .menu-item {
@@ -40,3 +66,68 @@ body {
 .menu-column-container>* {
     margin-left: 6rem;
 }
+
+.box-element {
+    box-shadow: hsl(0, 0%, 80%) 0 0 16px;
+    background-color: #fff;
+    border-radius: 0.5rem;
+    padding: 1em;
+    margin: 1em 0;
+}
+
+.table {
+    margin: 1em 0;
+}
+
+ion-icon {
+    transition: transform ease-in 200ms;
+}
+
+ion-icon:hover {
+    transform: scale(1.25);
+}
+
+.quantity-number {
+    margin-right: 1rem;
+}
+
+.error-log {
+    opacity: 0.8;
+    z-index: 100;
+    position: absolute;
+    left: 50%;
+    top: 10%;
+    transform: translate(-50%, 0%);
+    width: 95vw;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.StripeElement {
+    box-sizing: border-box;
+  
+    height: 40px;
+  
+    padding: 10px 12px;
+  
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background-color: white;
+  
+    box-shadow: 0 1px 3px 0 #e6ebf1;
+    -webkit-transition: box-shadow 150ms ease;
+    transition: box-shadow 150ms ease;
+  }
+  
+  .StripeElement--focus {
+    box-shadow: 0 1px 3px 0 #cfd7df;
+  }
+  
+  .StripeElement--invalid {
+    border-color: #fa755a;
+  }
+  
+  .StripeElement--webkit-autofill {
+    background-color: #fefde5 !important;
+  }

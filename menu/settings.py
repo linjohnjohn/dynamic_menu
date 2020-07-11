@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # internal
     'items.apps.ItemsConfig',
     'orders.apps.OrdersConfig',
+    'customer.apps.CustomerConfig',
 ]
 
 MIDDLEWARE = [
@@ -122,8 +123,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+AUTH_USER_MODEL = 'customer.User'
+
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+from django.contrib.messages import constants as messages
+
+MESSAGE_TAGS = {
+    messages.ERROR: 'alert-danger',
+    messages.SUCCESS: 'alert-success',
+    messages.INFO: 'alert-info'
+}

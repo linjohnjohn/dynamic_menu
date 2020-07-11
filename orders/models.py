@@ -1,20 +1,29 @@
+from django.contrib.auth.models import User 
 from django.db import models
 
 from items.models import Variant, Modifier, Item
-
+from customer.models import Customer
 # Create your models here.
 
 class Order(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
     transaction_id = models.CharField(max_length=200)
     
+    def __str__(self):
+        print(self.id)
+        return str(self.id)
+
     @property
-    def price(self):
-        price = 0
-        for i in self.order_items.all():
-            price += i.price
-        return price
+    def get_cart_total(self):
+        orderitems = self.order_items.all()
+        return sum([item.total_price for item in orderitems])
+
+    @property
+    def get_num_items(self):
+        orderitems = self.order_items.all()
+        return sum([item.quantity for item in orderitems])
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, null=True, on_delete=models.SET_NULL, related_name='order_items')
@@ -23,8 +32,11 @@ class OrderItem(models.Model):
     modifiers = models.ManyToManyField(Modifier)
     quantity = models.IntegerField(default=0)
 
+    def __str__(self):
+        return str(self.id)
+
     @property
-    def price(self):
+    def unit_price(self):
         price = self.item.price
 
         if self.variant:
@@ -34,3 +46,7 @@ class OrderItem(models.Model):
             price += m.markup
         
         return price
+    
+    @property
+    def total_price(self):
+        return self.unit_price * self.quantity

@@ -1,4 +1,3 @@
-console.log('attached')
 const addToCartForm = document.querySelectorAll('.add-to-cart-form');
 
 addToCartForm.forEach(form => {
@@ -7,6 +6,7 @@ addToCartForm.forEach(form => {
         event.stopPropagation();
         const formData = new FormData(event.target)
         
+        const csrftoken = formData.get('csrfmiddlewaretoken');
         const item = formData.get('item');
         const variant = formData.get('variant');
         const modifiers = formData.getAll('modifiers') || [];
@@ -16,28 +16,79 @@ addToCartForm.forEach(form => {
             item: item,
             variant: variant,
             modifiers: modifiers,
-            quantity: 1
+            quantity: quantity
         };
 
-        addNewCookieCartItem(orderItem);
+        if (!isLoggedIn) {
+            addNewCookieCartItem(orderItem);
+        } else {
+            const url = `/add_to_cart/${item}`;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(orderItem)
+            }).then(response => {
+                return response.json();
+            }).then(data => {
+                location.href = '/';
+            });
+        }
     });
 })
+
 function addNewCookieCartItem(orderItem) {
     cart.push(orderItem);
     document.cookie = `cart=${JSON.stringify(cart)};domain=;path=/`;
-    location.href = '/menu';    
+    location.href = '/';    
 }
 
-function updateCookieCart(orderItemNum, action) {
-    if (cart.length > orderItemNum) {
+const updateButtons = document.querySelectorAll('.update-cart');
+const csrftoken = document.querySelector('#csrftoken input').value;
+
+updateButtons.forEach(button => {
+    button.addEventListener('click', function (event) {
+        const index = this.dataset.index;
+        const orderItem = this.dataset.item;
+        const action = this.dataset.action;
+        if (!isLoggedIn) {
+            updateCookieCart(index, action)
+        } else {
+            const url = '/update_cart/';
+
+            const body = {
+                'orderItem': orderItem,
+                'action': action
+            };
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(body)
+            }).then(response => {
+                return response.json();
+            }).then(data => {
+                location.reload();
+            });
+        }
+    });
+});
+
+function updateCookieCart(index, action) {
+    if (index >= cart.length) {
         return;
     }
     if (action === 'add') {
-        cart[orderItemNum].quantity += 1
+        cart[index].quantity += 1
     } else if (action === 'remove') {
-        cart[orderItemNum].quantity -= 1
-        if (cart[orderItemNum].quantity <= 0) {
-            cart.splice(orderItemNum, 1);
+        cart[index].quantity -= 1
+        if (cart[index].quantity <= 0) {
+            cart.splice(index, 1);
         }
     }
     document.cookie = `cart=${JSON.stringify(cart)};domain=;path=/`;
