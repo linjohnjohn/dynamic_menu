@@ -1,0 +1,38 @@
+{% extends 'orders/main.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h3 class="mt-3">
+        My Orders
+    </h3>
+    <div class="mt-3 list-group">
+        {% for order in orders %}
+        <a href="{% url 'retrieve_order' order.id %}" class="list-group-item list-group-item-action">
+            <div class="float-left">
+                <h5>
+                    Order ID #{{order.id}}
+                </h5>
+                {% if order.complete_date %}
+                <div class="text-secondary">
+                    Ordered Placed: {{order.complete_date}}
+                </div>
+                {% endif %}
+                <div class="text-secondary">
+                    Items: {{order.get_num_items}}
+                </div>
+
+            </div>
+            <div class="float-right">
+                <div>
+                    Order Total: 
+                </div>
+                <div class="float-right">
+                    {{order.get_cart_total}}
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

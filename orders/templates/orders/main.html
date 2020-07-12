@@ -39,6 +39,7 @@
                 </ul>
                 <div class="form-inline my-2 my-lg-0 navbar-nav align-items-center">
                     {% if request.user.is_authenticated %}
+                    <a href="{% url 'orders' %}" class='nav-item nav-link'>My Orders</a>
                     <a href="{% url 'logout' %}" class='nav-item nav-link'>Logout</a>
                     {% else %}
                     <a href="{% url 'login' %}" class='nav-item nav-link'>Login</a>

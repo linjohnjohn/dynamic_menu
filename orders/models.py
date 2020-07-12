@@ -11,8 +11,9 @@ class Order(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
-    transaction_id = models.CharField(max_length=200)
-    
+    complete_date = models.DateField(null=True)
+    stripe_checkout_id = models.CharField(max_length=200)
+
     def __str__(self):
         return str(self.id)
 

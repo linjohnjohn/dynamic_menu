@@ -3,6 +3,8 @@ from . import views
 from . import stripe
 
 urlpatterns = [
+    path('orders/', views.orders, name='orders'),
+    path('orders/<int:id>', views.retrieve_order, name='retrieve_order'),
     path('update_cart/', views.update_cart, name='update_cart'),
     path('add_to_cart/<int:id>', views.add_to_cart, name='add_to_cart'),
     path('cart/', views.cart, name='cart'),

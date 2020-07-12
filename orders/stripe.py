@@ -3,6 +3,7 @@ from django.http import HttpResponse
 
 import json
 import stripe
+import datetime
 import pdb
 
 from .models import Order
@@ -69,6 +70,7 @@ def webhook(request):
         # ... handle other event types
     elif event.type == 'checkout.session.completed':
         session = event['data']['object']
+        cs_id = session['id']
         order_id = session['metadata']['order-id']
         customer_id = session['customer']
         customer = stripe.Customer.retrieve(customer_id)
@@ -77,6 +79,8 @@ def webhook(request):
 
         order = Order.objects.get(id=order_id)
         order.complete = True
+        order.complete_date = datetime.datetime.now()
+        order.stripe_checkout_id = cs_id
 
         if order.session:
             order.session = None

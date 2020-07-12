@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.contrib.sessions.models import Session
+from django.contrib.auth.decorators import login_required
+
 
 import stripe
 import json, datetime
@@ -9,6 +11,25 @@ from customer.models import Customer
 from .models import OrderItem, Order
 from .stripe import createCheckoutSession
 import pdb
+
+@login_required
+def orders(request):
+    _, order = cart_details(request)
+    orders = Order.objects.filter(customer=request.user.customer, complete=True)
+    context = { 'orders': orders, 'order': order }
+    return render(request, 'orders/orders.html', context)
+
+@login_required 
+def retrieve_order(request, id):
+    retrieved_order = Order.objects.filter(pk=id, customer=request.user.customer, complete=True)
+    if retrieved_order.exists():
+        _, order = cart_details(request)
+        retrieved_order = retrieved_order.first()
+        cartEntries = retrieved_order.order_items.all()
+        context = { 'order': order, 'retrieved_order': retrieved_order, 'cartEntries': cartEntries }
+        return render(request, 'orders/order.html', context)
+    return HttpResponse(status=404)
+
 
 def menu(request):
     cartEntries, order = cart_details(request)
