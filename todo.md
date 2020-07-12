@@ -10,4 +10,7 @@
 
 -d factor out auth views
 
-- go from cart to stripe checkout directly; make sure u can use same checkout session
+-d go from cart to stripe checkout directly; make sure u can use same checkout session
+
+- images for category, storing it
+- postgres db

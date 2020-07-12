@@ -8,8 +8,9 @@ import pdb
 
 from .models import Order
 from customer.models import Customer
+from django.conf import settings 
 
-stripe.api_key = 'sk_test_51H3NC3LegJFM7u3CmJgAZRSyTYlW5foBWOKatWPqCEHZSWZwnE94Y9pns4m1eVR8sqwshv4knkJf8HwHuxKvE5l900YLLGA2yg'
+stripe.api_key = settings.STRIPE_SK
 
 def createCheckoutSession(request, order, cartEntries):
     line_items = []
