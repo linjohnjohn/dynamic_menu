@@ -43,7 +43,7 @@ def createCheckoutSession(request, order, cartEntries):
         },
         mode='payment',
         success_url='http://localhost:8002/checkout_success/',
-        cancel_url='http://localhost:8002/checkout/',
+        cancel_url='http://localhost:8002/cart/',
     )
     
     return session

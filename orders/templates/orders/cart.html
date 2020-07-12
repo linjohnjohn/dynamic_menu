@@ -1,6 +1,10 @@
 {% extends 'orders/main.html' %}
 {% load static %}
 
+{% block head %}
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock head %}
+
 {% block content %}
 <div class="container">
     <div class="row">
@@ -8,7 +12,9 @@
             <div class="box-element">
                 <div class="d-flex flex-row justify-content-between">
                     <a class="btn btn-outline-dark" href="{% url 'home' %}">&#x2190; Menu</a>
-                    <a class="btn btn-outline-success" href="{% url 'checkout' %}">Checkout &#8594;</a>
+                    {% if session_id %}
+                    <button class="btn btn-outline-success" id="checkout-button" href="#">Checkout &#8594;</button>
+                    {% endif %}
                 </div>
 
                 <table class="table">
@@ -67,3 +73,20 @@
 </div>
 <script src="{% static 'js/cart.js' %}"></script>
 {% endblock content %}
+
+{% block script %}
+<script type="text/javascript">
+    const stripe = Stripe('pk_test_51H3NC3LegJFM7u3CW4Q3Z1Spuel0IYsSKcAHYOz8Nx1kmv0iRYIShmbBArJuzTbs7gkMBUmYl8DxpNcDW0OdfbB100uY7f0Lnd');
+
+    const checkoutButton = document.querySelector('#checkout-button');
+
+    checkoutButton.addEventListener('click', function () {
+        
+        stripe.redirectToCheckout({
+            sessionId: '{{ session_id }}'
+        }).then(function (result) {
+            window.result = result;
+        });
+    });
+</script>
+{% endblock script %}

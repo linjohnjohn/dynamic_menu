@@ -1,10 +1,6 @@
 {% extends 'orders/main.html' %}
 {% load static %}
 
-{% block head %}
-<script src="https://js.stripe.com/v3/"></script>
-{% endblock head %}
-
 {% block content %}
 <div class="container">
     <div class="row">
@@ -28,8 +24,6 @@
 {% endblock content %}
 
 {% block script %}
-<script
-    src="https://www.paypal.com/sdk/js?client-id=AWbL2VQW4yJSYDE9gjY8pSFGQ15pn5Q6pyN7AbzPzwrsPOq1DbXdiDDqiRAoiANcjLKfTkKS4hA1CjkM&currency=USD&disable-funding=credit"></script>
 <script type="text/javascript">
     const stripe = Stripe('pk_test_51H3NC3LegJFM7u3CW4Q3Z1Spuel0IYsSKcAHYOz8Nx1kmv0iRYIShmbBArJuzTbs7gkMBUmYl8DxpNcDW0OdfbB100uY7f0Lnd');
 

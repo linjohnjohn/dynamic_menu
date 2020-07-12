@@ -44,62 +44,18 @@ def checkout(request):
         session = createCheckoutSession(request, order, cartEntries)
         context = {'cartEntries': cartEntries, 'order': order, 'session_id': session.id}
         return render(request, 'orders/checkout.html', context)
-    elif request.method == 'POST':
-        transaction_id = datetime.datetime.now().timestamp()
-        data = json.loads(request.body)
-
-        if request.user.is_authenticated:
-            pass
-        else:
-            name = data['form']['name']
-            email = data['form']['email']
-            phone = data['form']['phone']
-
-            cartEntries, order = cart_details(request)
-            customer, created = Customer.objects.get_or_create(
-                email=email,
-            )
-
-            customer.phone = phone
-            customer.name = name
-            customer.save()
-
-            order = Order.objects.create(
-                customer=customer,
-                complete=False
-            )
-
-            for entry in cartEntries:
-                item = entry['item']
-                variant = entry['variant']
-                modifiers = entry['modifiers']
-                quantity = entry['quantity']
-
-                orderItem = OrderItem.objects.create(
-                    order=order,
-                    item=item,
-                    variant=variant,
-                    quantity=quantity
-                )
-
-                for m in modifiers:
-                    orderItem.modifiers.add(m)
-
-            total = float(data['form']['total'])    
-            order.transaction_id = transaction_id
-
-            if total == order.get_cart_total:
-                order.complete = True
-            order.save()
-
-            return JsonResponse('Payment complete', safe=False)
 
 def checkout_success(request):
     return render(request, 'orders/checkout_success.html')
 
 def cart(request):
     cartEntries, order = cart_details(request)
-    context = {'cartEntries': cartEntries, 'order': order}
+    if len(cartEntries) > 0:
+        session = createCheckoutSession(request, order, cartEntries)
+        session_id = session.id
+    else:
+        session_id = None
+    context = {'cartEntries': cartEntries, 'order': order, 'session_id': session_id}
     return render(request, 'orders/cart.html', context)
 
 def add_to_cart(request, id):
