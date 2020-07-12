@@ -23,5 +23,6 @@ admin.site.index_title = 'Manage Your Data'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('items.urls')),
-    path('', include('orders.urls'))
+    path('', include('orders.urls')),
+    path('', include('customer.urls'))
 ]
