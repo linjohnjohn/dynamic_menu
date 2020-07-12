@@ -2,6 +2,7 @@ from django.shortcuts import render, reverse, redirect
 from django.http import JsonResponse, HttpResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout, logout
+from django.contrib.sessions.models import Session
 
 import stripe
 import json, datetime
@@ -10,11 +11,14 @@ from customer.models import Customer
 from .models import OrderItem, Order
 from .forms import CreateUserForm
 from .stripe import createCheckoutSession
+import pdb
 
 def login(request):
     if request.method == 'GET':
+        cart_entries, order = cart_details(request)
         form = CreateUserForm()
-        return render(request, 'orders/login.html')
+        context = {'order': order}
+        return render(request, 'orders/login.html', context)
     elif request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -35,18 +39,17 @@ def logout(request):
 
 def register(request):
     if request.method == 'GET':
+        order, cart_entries = cart_details(request)
         form = CreateUserForm()
-        context = {'form': form}
+        context = {'form': form, 'order': order}
         return render(request, 'orders/register.html', context)
     elif request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
             user = form.save()
-            Customer.objects.create(user=user, email=form.cleaned_data.get('email'), phone=form.cleaned_data.get('phone'))
-            email = form.cleaned_data.get('email')
             django_login(request, user)
-            messages.success(request, 'Account was created for ' + email)
-            return redirect('login')
+            messages.success(request, 'Account was created for ' + user.email)
+            return redirect('home')
         else:
             context = {'form': form}
             return render(request, 'orders/register.html', context)
@@ -62,7 +65,7 @@ def checkout(request):
     if request.method == 'GET':
         cartEntries, order = cart_details(request)
         # intent = createIntent(order.get_cart_total)
-        session = createCheckoutSession(order, cartEntries)
+        session = createCheckoutSession(request, order, cartEntries)
         context = {'cartEntries': cartEntries, 'order': order, 'session_id': session.id}
         return render(request, 'orders/checkout.html', context)
     elif request.method == 'POST':
@@ -131,9 +134,15 @@ def add_to_cart(request, id):
         return render(request, 'orders/add.html', context)
     elif request.method == 'POST':
         if not request.user.is_authenticated:
-            return redirect('login')
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+            if not request.session.session_key:
+                request.session.create()
+            session_id = request.session.session_key
+            print(session_id)
+            session = Session.objects.get(session_key=session_id)
+            order, created = Order.objects.get_or_create(session=session, complete=False)
+        else:
+            customer = request.user.customer
+            order, created = Order.objects.get_or_create(customer=customer, complete=False)
 
         data = json.loads(request.body)
         variant = data.get('variant', 'regular')
@@ -156,26 +165,24 @@ def add_to_cart(request, id):
         return JsonResponse("Added to Cart", safe=False)
     
 def update_cart(request):
-    if request.user.is_authenticated:
-        data = json.loads(request.body)
-        orderItem = data.get('orderItem', None)
-        action = data.get('action', 'add')
-        orderItem = OrderItem.objects.filter(id=orderItem)
+    data = json.loads(request.body)
+    orderItem = data.get('orderItem', None)
+    action = data.get('action', 'add')
+    orderItem = OrderItem.objects.filter(id=orderItem)
+    
+    if orderItem.exists():
+        orderItem = orderItem.first()
         
-        if orderItem.exists():
-            orderItem = orderItem.first()
-            
-            if action == 'add':
-                orderItem.quantity += 1
+        if action == 'add':
+            orderItem.quantity += 1
+            orderItem.save()
+        elif action == 'remove':
+            orderItem.quantity -= 1
+            if orderItem.quantity <= 0:
+                orderItem.delete()
+            else:
                 orderItem.save()
-            elif action == 'remove':
-                orderItem.quantity -= 1
-                if orderItem.quantity <= 0:
-                    orderItem.delete()
-                else:
-                    orderItem.save()
-            return JsonResponse("Cart Updated", safe=False)
-        # @todo handle doesn't exists
+        return JsonResponse("Cart Updated", safe=False)
 
 def cart_details(request):
     if request.user.is_authenticated:
@@ -184,55 +191,62 @@ def cart_details(request):
             customer=customer, complete=False)
         cartEntries = order.order_items.all()
     else:
-        cart = json.loads(request.COOKIES.get('cart', "[]"))
-        cartEntries = []
-        cartTotal = 0
-        numItems = 0
-        for entry in cart:
-            item = entry.get('item', None)
-            if item == None:
-                continue
-            item = Item.objects.filter(pk=item)
-            if item.exists():
-                item = item.first()
-            else:
-                continue
+        if not request.session.session_key:
+            request.session.create()
+        session_id = request.session.session_key
+        print(session_id)
+        session = Session.objects.get(session_key=session_id)
+        order, created = Order.objects.get_or_create(session=session, complete=False)
+        cartEntries = order.order_items.all()
+        # cart = json.loads(request.COOKIES.get('cart', "[]"))
+        # cartEntries = []
+        # cartTotal = 0
+        # numItems = 0
+        # for entry in cart:
+        #     item = entry.get('item', None)
+        #     if item == None:
+        #         continue
+        #     item = Item.objects.filter(pk=item)
+        #     if item.exists():
+        #         item = item.first()
+        #     else:
+        #         continue
 
-            variant = entry.get('variant', 'regular')
-            if variant != 'regular':
-                variant = Variant.objects.filter(pk=variant)
-                if variant.exists():
-                    variant = variant.first()
-                else:
-                    continue
-            else:
-                variant = None
+        #     variant = entry.get('variant', 'regular')
+        #     if variant != 'regular':
+        #         variant = Variant.objects.filter(pk=variant)
+        #         if variant.exists():
+        #             variant = variant.first()
+        #         else:
+        #             continue
+        #     else:
+        #         variant = None
 
-            modifiers = entry.get('modifiers', [])
-            modifiers = Modifier.objects.filter(pk__in=modifiers)
+        #     modifiers = entry.get('modifiers', [])
+        #     modifiers = Modifier.objects.filter(pk__in=modifiers)
 
-            price = item.price
+        #     price = item.price
 
-            if variant:
-                price += variant.markup
+        #     if variant:
+        #         price += variant.markup
             
-            for m in modifiers:
-                price += m.markup
+        #     for m in modifiers:
+        #         price += m.markup
 
-            quantity = int(entry.get('quantity', 1))
-            total_price = price * quantity
+        #     quantity = int(entry.get('quantity', 1))
+        #     total_price = price * quantity
 
-            numItems += quantity
+        #     numItems += quantity
 
-            cartEntries.append({
-                'item': item,
-                'variant': variant,
-                'modifiers': modifiers,
-                'unit_price': price,
-                'total_price': price,
-                'quantity': quantity
-            })
-            cartTotal += total_price
+        #     cartEntries.append({
+        #         'item': item,
+        #         'variant': variant,
+        #         'modifiers': modifiers,
+        #         'unit_price': price,
+        #         'total_price': price,
+        #         'quantity': quantity
+        #     })
+        #     cartTotal += total_price
         
-        order = { 'get_cart_total': cartTotal, 'get_num_items': numItems }
+        # order = { 'get_cart_total': cartTotal, 'get_num_items': numItems }
     return cartEntries, order

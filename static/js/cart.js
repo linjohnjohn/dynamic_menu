@@ -19,24 +19,20 @@ addToCartForm.forEach(form => {
             quantity: quantity
         };
 
-        if (!isLoggedIn) {
-            addNewCookieCartItem(orderItem);
-        } else {
-            const url = `/add_to_cart/${item}`;
+        const url = `/add_to_cart/${item}`;
 
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify(orderItem)
-            }).then(response => {
-                return response.json();
-            }).then(data => {
-                location.href = '/';
-            });
-        }
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(orderItem)
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            location.href = '/';
+        });
     });
 })
 
@@ -54,28 +50,25 @@ updateButtons.forEach(button => {
         const index = this.dataset.index;
         const orderItem = this.dataset.item;
         const action = this.dataset.action;
-        if (!isLoggedIn) {
-            updateCookieCart(index, action)
-        } else {
-            const url = '/update_cart/';
+        
+        const url = '/update_cart/';
 
-            const body = {
-                'orderItem': orderItem,
-                'action': action
-            };
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify(body)
-            }).then(response => {
-                return response.json();
-            }).then(data => {
-                location.reload();
-            });
-        }
+        const body = {
+            'orderItem': orderItem,
+            'action': action
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify(body)
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            location.reload();
+        });
     });
 });
 

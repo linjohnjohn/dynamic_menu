@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User 
+from django.contrib.sessions.models import Session 
 from django.db import models
 
 from items.models import Variant, Modifier, Item
@@ -7,12 +8,12 @@ from customer.models import Customer
 
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE, null=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
     transaction_id = models.CharField(max_length=200)
     
     def __str__(self):
-        print(self.id)
         return str(self.id)
 
     @property

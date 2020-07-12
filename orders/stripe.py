@@ -3,20 +3,14 @@ from django.http import HttpResponse
 
 import json
 import stripe
+import pdb
 
 from .models import Order
+from customer.models import Customer
 
 stripe.api_key = 'sk_test_51H3NC3LegJFM7u3CmJgAZRSyTYlW5foBWOKatWPqCEHZSWZwnE94Y9pns4m1eVR8sqwshv4knkJf8HwHuxKvE5l900YLLGA2yg'
 
-# def createIntent(dollarAmount):
-#     return stripe.PaymentIntent.create(
-#         amount=int(dollarAmount * 100),
-#         currency='usd',
-#         # Verify your integration in this guide by including this parameter
-#         metadata={'integration_check': 'accept_a_payment'},
-#     )
-
-def createCheckoutSession(order, cartEntries):
+def createCheckoutSession(request, order, cartEntries):
     line_items = []
     for entry in cartEntries:
         modifier_names = [m.name for m in entry.modifiers.all()]
@@ -35,15 +29,20 @@ def createCheckoutSession(order, cartEntries):
             },
             'quantity': entry.quantity
         })
+    email = None
+    if request.user.is_authenticated:
+        email = request.user.email
+
     session = stripe.checkout.Session.create(
-    payment_method_types=['card'],
-    line_items=line_items,
-    metadata={
-        'order-id': order.id
-    },
-    mode='payment',
-    success_url='http://localhost:8001/checkout_success/',
-    cancel_url='http://localhost:8001/checkout/',
+        customer_email=email,
+        payment_method_types=['card'],
+        line_items=line_items,
+        metadata={
+            'order-id': order.id
+        },
+        mode='payment',
+        success_url='http://localhost:8002/checkout_success/',
+        cancel_url='http://localhost:8002/checkout/',
     )
     
     return session
@@ -52,7 +51,6 @@ def createCheckoutSession(order, cartEntries):
 def webhook(request):
     payload = request.body
     event = None
-    print(payload)
     try:
         event = stripe.Event.construct_from(
             json.loads(payload), stripe.api_key
@@ -72,10 +70,19 @@ def webhook(request):
     elif event.type == 'checkout.session.completed':
         session = event['data']['object']
         order_id = session['metadata']['order-id']
+        customer_id = session['customer']
+        customer = stripe.Customer.retrieve(customer_id)
+        customer_email = customer["email"]
+        customer, created = Customer.objects.get_or_create(email=customer_email)
+
         order = Order.objects.get(id=order_id)
         order.complete = True
+
+        if order.session:
+            order.session = None
+            order.customer = customer
+
         order.save()
-        print(session)
     else:
         # Unexpected event type
         return HttpResponse(status=400)

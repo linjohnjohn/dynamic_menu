@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+import pdb
 
+# Create your models here.
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
 
@@ -20,13 +22,13 @@ class UserManager(BaseUserManager):
         """Create and save a regular User with the given email and password."""
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
+        breakpoint()
         return self._create_user(email, password, **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
         """Create and save a SuperUser with the given email and password."""
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
@@ -45,13 +47,20 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
-# Create your models here.
+    def save(self, *args, **kwargs):
+        id = self.id
+        super(User, self).save(*args, **kwargs)
+        if not id:
+            customer, created = Customer.objects.get_or_create(email=self.email)
+            customer.user = self
+            customer.save()
 
 class Customer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200, null=True)
-    email = models.EmailField(max_length=200)
+    email = models.EmailField(max_length=200, unique=True)
     phone = models.CharField(max_length=12, null=True)
 
     def __str__(self):
-        return self.user.email
+        return self.email
+
