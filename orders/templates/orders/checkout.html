@@ -9,36 +9,9 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-6">
-            <div id="form-wrapper" class="box-element">
-                <form id="form">
-                    {% csrf_token %}
-                    <div id="user-info" class="form-row mb-3">
-                        <div class="col">
-                            <label>Name</label>
-                            <input type="text" class="form-control" placeholder="Name" name="name">
-                        </div>
-                        <div class="col">
-                            <label>Phone Number</label>
-                            <input type="text" class="form-control" placeholder="Phone Number" name="phone">
-                        </div>
-                    </div>
-                    <div id="user-info" class="form-row mb-3">
-                        <div class="col">
-                            <label>Email</label>
-                            <input type="text" class="form-control" placeholder="Email" name="email">
-                        </div>
-                    </div>
-
-                    <input id="form-continue" type="submit" value="Continue"
-                        class="btn btn-outline-success btn-block" />
-                </form>
-            </div>
-
-            <div class="box-element" hidden id="payment-info">
-                <!-- <small>Paypal Options</small> -->
+            <div class="box-element" id="payment-info">
                 <button id="checkout-button" class="btn btn-primary btn-block">Stripe Checkout</button>
             </div>
-
         </div>
         <div class="col-lg-6">
             <div class="box-element">
@@ -46,16 +19,6 @@
                 <hr>
                 <h3>Order Summary</h3>
                 <hr>
-                <!-- {% for item in items %}
-            <div class="cart-row">
-                <div style="flex:2"><img src="{{ item.product.imageURL }}" alt=""></div>
-                <div style="flex:2">{{ item.product.name }}</div>
-                <div style="flex:1">${{ item.product.price }}</div>
-                <div style="flex:1">{{ item.quantity }}</div>
-                <div style="flex:1">{{ item.get_total }}</div>
-            </div>
-            {% endfor %} -->
-
                 <h5>Items: {{ order.get_num_items }}</h5>
                 <h5>Total: ${{ order.get_cart_total|floatformat:2 }}</h5>
             </div>
@@ -84,24 +47,6 @@
 </script>
 
 <script type="text/javascript">
-    if (isLoggedIn) {
-        document.querySelector('#user-info').remove();
-    }
-
-    if (isLoggedIn) {
-        document.querySelector('#form-wrapper').remove();
-        document.querySelector('#payment-info').hidden = false;
-    } else {
-        const form = document.querySelector('#form');
-        csrftoken = form.querySelectorAll("input")[0].value;
-
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            document.querySelector('#form-continue').hidden = true;
-            document.querySelector('#payment-info').hidden = false;
-        });
-    }
-
     function processCheckout() {
         const userFormData = {
             name: null,

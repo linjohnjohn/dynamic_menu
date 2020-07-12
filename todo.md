@@ -6,6 +6,8 @@
 
 - customize user creation form to take phone number
 
-- remove our checkout forms
+-d remove our checkout forms
 
-- factor out auth views
+-d factor out auth views
+
+- go from cart to stripe checkout directly; make sure u can use same checkout session

@@ -1,7 +1,5 @@
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from django.contrib import messages
-from django.contrib.auth import authenticate, login as django_login, logout as django_logout, logout
 from django.contrib.sessions.models import Session
 
 import stripe

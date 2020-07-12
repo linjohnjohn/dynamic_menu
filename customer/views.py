@@ -1,6 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout, logout
 
 from .forms import CreateUserForm
+from orders.views import cart_details
 
 # Create your views here.
 def login(request):
