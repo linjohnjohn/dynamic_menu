@@ -12,5 +12,7 @@
 
 -d go from cart to stripe checkout directly; make sure u can use same checkout session
 
-- images for category, storing it
-- postgres db
+-d images for category, storing it
+-d postgres db
+
+-d save data data dumps
