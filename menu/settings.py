@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import passwords
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -88,20 +87,19 @@ WSGI_APPLICATION = 'menu.wsgi.application'
 
 DATABASES = {
     # sqlite db
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
-
-    # postgres db
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': passwords.DB_NAME,
-        'USER': passwords.DB_USER,
-        'PASSWORD': passwords.DB_PASSWORD,
-        'HOST': 'localhost',
-        'PORT': ''
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
+    # postgres db
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': passwords.DB_NAME,
+    #     'USER': passwords.DB_USER,
+    #     'PASSWORD': passwords.DB_PASSWORD,
+    #     'HOST': 'localhost',
+    #     'PORT': ''
+    # }
 }
 
 import dj_database_url
@@ -109,7 +107,7 @@ import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
-STRIPE_SK = passwords.STRIPE_SK
+STRIPE_SK = os.environ.get('STRIPE_SK', '')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
