@@ -35,3 +35,15 @@
 </div>
 
 {% endblock content %}
+
+{% block script %}
+<script>
+    const categoryImages = document.querySelectorAll('.category-img');
+    categoryImages.forEach(image => {
+        image.onerror = function() {
+            this.onerror=null;
+            this.src="{% static 'images/example_tea.png' %}";
+        }
+    })
+</script>
+{% endblock %}
