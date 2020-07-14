@@ -107,7 +107,11 @@ import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
-STRIPE_SK = os.environ.get('STRIPE_SK', '')
+STRIPE_SK = os.environ.get('STRIPE_SK', None)
+
+if STRIPE_SK == None:
+    import passwords
+    STRIPE_SK = passwords.STRIPE_SK
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
