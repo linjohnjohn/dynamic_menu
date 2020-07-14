@@ -76,7 +76,7 @@
 
 {% block script %}
 <script type="text/javascript">
-    const stripe = Stripe('pk_test_51H3NC3LegJFM7u3CW4Q3Z1Spuel0IYsSKcAHYOz8Nx1kmv0iRYIShmbBArJuzTbs7gkMBUmYl8DxpNcDW0OdfbB100uY7f0Lnd');
+    const stripe = Stripe("{{stripe_pk}}");
 
     const checkoutButton = document.querySelector('#checkout-button');
 

@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.contrib.sessions.models import Session
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 
 import stripe
@@ -55,7 +56,7 @@ def cart(request):
         session_id = session.id
     else:
         session_id = None
-    context = {'cartEntries': cartEntries, 'order': order, 'session_id': session_id}
+    context = {'cartEntries': cartEntries, 'order': order, 'session_id': session_id, 'stripe_pk': settings.STRIPE_PK }
     return render(request, 'orders/cart.html', context)
 
 def add_to_cart(request, id):

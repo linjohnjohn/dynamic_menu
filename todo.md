@@ -18,7 +18,9 @@
 -d save data data dumps
 
 - save data data dumps with images?
+- better positioning for menu
 
 -d add favicon
 -d stripe hook to heroku
-- better positioning for menu
+
+- separate user images vs system images
