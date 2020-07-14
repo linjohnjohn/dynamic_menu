@@ -6,7 +6,7 @@
 <div class="d-flex flex-column flex-wrap h-100 menu-column-container justify-content-between">
     {% for category in categories %}
     <div class="d-flex flex-column justify-content-between position-relative" style="flex-grow:{{category.items.all|length}}">
-    <img class="category-img" src="{{category.image.url}}">
+    <img class="category-img" src="{% if category.imageURL %} {{category.imageURL}} {% else %} {% static 'images/example_tea.png' %} {% endif %}">
         <h5 class="category-heading">
             {{ category.name }}
         </h5>
@@ -35,15 +35,3 @@
 </div>
 
 {% endblock content %}
-
-{% block script %}
-<script>
-    const categoryImages = document.querySelectorAll('.category-img');
-    categoryImages.forEach(image => {
-        image.onerror = () => {
-            this.onerror=null;
-            this.src="{% static 'images/example_tea.jpg' %}";
-        }
-    })
-</script>
-{% endblock %}

@@ -16,3 +16,9 @@
 -d postgres db
 
 -d save data data dumps
+
+- save data data dumps with images?
+
+-d add favicon
+-d stripe hook to heroku
+- better positioning for menu

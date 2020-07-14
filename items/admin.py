@@ -8,7 +8,6 @@ class IngredientAdmin(admin.ModelAdmin):
     list_filter=('available',)
 
 class VariantInline(admin.TabularInline):
-    
     verbose_name="Variant"
     model = Item.variants.through
     extra=0

@@ -16,6 +16,13 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def imageURL(self):
+        try:
+            return self.image.url
+        except:
+            return None
+
 class Item(models.Model):
     name = models.CharField(max_length=200)
     second_name = models.CharField(max_length=200)
