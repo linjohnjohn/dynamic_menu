@@ -31,7 +31,6 @@ body {
 }
 
 .main-container {
-    /* margin: 0 1rem; */
     overflow: auto;
 }
 
@@ -130,4 +129,26 @@ ion-icon:hover {
   
   .StripeElement--webkit-autofill {
     background-color: #fefde5 !important;
+  }
+
+  .order-menu-list>div {
+    margin-left: 6rem;
+    page-break-inside: avoid;
+  }
+
+  .order-menu-list {
+    margin-right: 1rem;
+    column-count: 1;
+  }
+
+  @media (min-width: 768px) {
+    .order-menu-list {
+        column-count: 2;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .order-menu-list {
+        column-count: 3;
+    }
   }
