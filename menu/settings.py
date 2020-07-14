@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'mct_ijy07^+-lf%f31m4snzd9f7&r-
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
 
-ALLOWED_HOSTS = ['protected-scrubland-38418.herokuapp.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['mogetee.herokuapp.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
