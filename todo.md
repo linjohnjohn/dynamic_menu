@@ -25,4 +25,4 @@
 -d add favicon
 -d stripe hook to heroku
 
-- separate user images vs system images
+-d separate user images vs system images

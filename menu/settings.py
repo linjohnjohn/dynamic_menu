@@ -175,4 +175,4 @@ MESSAGE_TAGS = {
 }
 
 MEDIA_URL = '/images/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/images')
