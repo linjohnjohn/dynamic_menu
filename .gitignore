@@ -4,3 +4,10 @@ env/
 __pycache__/
 
 passwords.py
+
+media/
+
+gcp_auth.json
+
+.env.dev
+*.yml

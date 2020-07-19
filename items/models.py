@@ -1,4 +1,5 @@
 from django.db import models
+from django.templatetags.static import static
 
 # Create your models here.
 
@@ -21,7 +22,7 @@ class Category(models.Model):
         try:
             return self.image.url
         except:
-            return None
+            return static("sys_images/example_tea.png")
 
 class Item(models.Model):
     name = models.CharField(max_length=200)
